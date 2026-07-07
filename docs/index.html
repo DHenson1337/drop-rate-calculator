@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drop Rate Calculator</title>
+    <meta name="description" content="Calculate the probability of getting a rare drop in any game. Supports percentages and fractions." />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>⚔️</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <span class="logo">
+          <span class="logo-icon">⚔</span>
+          <span class="logo-text">DROP RATE CALCULATOR</span>
+        </span>
+        <span class="tagline">Beat the RNG</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- LEFT: Inputs -->
+      <aside class="inputs-panel">
+        <div class="panel-title">INPUTS</div>
+
+        <div class="input-group">
+          <label class="input-label" for="drop-rate">
+            Drop Rate
+            <span class="input-hint">e.g. 3%, 1/512, 0.05</span>
+          </label>
+          <input
+            id="drop-rate"
+            type="text"
+            class="text-input"
+            placeholder="1/512"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <div id="error-msg" class="error-msg" aria-live="polite"></div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="attempts-num">
+            Your Attempts
+          </label>
+          <input
+            id="attempts-num"
+            type="number"
+            class="text-input"
+            min="1"
+            max="100000"
+            value="100"
+          />
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="attempts-slider">
+            <span>Slider</span>
+            <span id="slider-display" class="slider-val">100</span>
+          </label>
+          <input
+            id="attempts-slider"
+            type="range"
+            class="range-input"
+            min="1"
+            max="1000"
+            value="100"
+          />
+          <div class="slider-ticks">
+            <span>1</span>
+            <span>250</span>
+            <span>500</span>
+            <span>750</span>
+            <span>1000</span>
+          </div>
+        </div>
+
+        <div class="quick-presets">
+          <div class="panel-title" style="margin-bottom:8px">QUICK PRESETS</div>
+          <div class="preset-grid">
+            <button class="preset-btn" data-rate="1/512" data-attempts="512">Pet (1/512)</button>
+            <button class="preset-btn" data-rate="1/128" data-attempts="200">Rare (1/128)</button>
+            <button class="preset-btn" data-rate="3%" data-attempts="50">Boss (3%)</button>
+            <button class="preset-btn" data-rate="1/1024" data-attempts="1000">Ultra (1/1024)</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: Results + Chart -->
+      <div class="results-panel">
+        <div class="stats-grid">
+          <div class="stat-card accent">
+            <div class="stat-label">AT LEAST ONE DROP</div>
+            <div class="stat-value" id="stat-atleastone">—</div>
+            <div class="stat-sub">probability in <span id="stat-n-label">—</span> attempts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">EXPECTED ATTEMPTS</div>
+            <div class="stat-value" id="stat-expected">—</div>
+            <div class="stat-sub">for one drop on average</div>
+          </div>
+          <div class="stat-card conf-card">
+            <div class="stat-label">CONFIDENCE THRESHOLDS</div>
+            <div class="conf-rows">
+              <div class="conf-row">
+                <span class="conf-pct" style="color:#60a5fa">50%</span>
+                <span class="conf-label">≥ 1 drop by</span>
+                <span class="conf-val" id="conf-50">—</span>
+                <span class="conf-unit">attempts</span>
+              </div>
+              <div class="conf-row">
+                <span class="conf-pct" style="color:#fb923c">90%</span>
+                <span class="conf-label">≥ 1 drop by</span>
+                <span class="conf-val" id="conf-90">—</span>
+                <span class="conf-unit">attempts</span>
+              </div>
+              <div class="conf-row">
+                <span class="conf-pct" style="color:#f87171">99%</span>
+                <span class="conf-label">≥ 1 drop by</span>
+                <span class="conf-val" id="conf-99">—</span>
+                <span class="conf-unit">attempts</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="verdict" class="verdict verdict--neutral">
+          <span class="verdict-icon" id="verdict-icon">🎲</span>
+          <div>
+            <div class="verdict-title" id="verdict-title">Enter your drop rate to begin</div>
+            <div class="verdict-sub" id="verdict-sub">Awaiting input…</div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-header">
+            <span class="panel-title">CUMULATIVE PROBABILITY</span>
+            <div class="chart-legend">
+              <span class="legend-dot" style="background:#7c4dff"></span><span>P(≥1 drop)</span>
+              <span class="legend-dot" style="background:#60a5fa"></span><span>50%</span>
+              <span class="legend-dot" style="background:#fb923c"></span><span>90%</span>
+              <span class="legend-dot" style="background:#f87171"></span><span>99%</span>
+            </div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
