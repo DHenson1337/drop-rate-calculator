@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Drop Rate Calculator"
+version = "1.0.0"
+id = "artifacts/drop-rate-calculator"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18650
+
+[services.development]
+run = "pnpm --filter @workspace/drop-rate-calculator run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/drop-rate-calculator", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/drop-rate-calculator/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18650"
+BASE_PATH = "/"
